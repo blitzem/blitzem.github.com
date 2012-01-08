@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>blitzem - Simple cloud environment management</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body, section {
+        padding-top: 60px;
+      }
+
+    </style>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="js/bootstrap-scrollspy.js"></script>
+    <script type="text/javascript">
+        $().ready( function() {
+            $('#topbar').scrollSpy();
+        });
+    </script>
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  </head>
+
+  <body>
+
+    <div class="topbar" data-scrollspy="scrollspy">
+      <div class="fill">
+        <div class="container">
+          <a class="brand" href="#">blitzem <i>beta</i></a>
+          <ul class="nav">
+            <li class="active"><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#usage">Usage</a></li>
+            <li><a href="#download">Download</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit" id="home">
+        <h1>blitzem</h1>
+        <p>Simple cloud environment management</p>
+        <p><a class="btn success large">Download the beta now! &raquo;</a></p>
+      </div>
+
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="span6">
+          <h2>Manage whole environments</h2>
+          <p>Blitzem allows you to control your cloud servers and load balancers as a complete environment,
+             rather than requiring you to control nodes individually. Whole environments can be controlled with
+             a single command. </p>
+          <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+        <div class="span5">
+          <h2>Infrastructure as code</h2>
+           <p>Your environment is specified as a simple, easy-to-read configuration file, allowing you
+              to share, version-control, review and track changes, and replicate an environment's infrastructure
+              configuration as of specific points in time. </p>
+          <p><a class="btn" href="#">View details &raquo;</a></p>
+       </div>
+        <div class="span5">
+          <h2>Fits with existing tools</h2>
+          <p>You bring your provisioning tool of choice (e.g. Puppet, Chef, CFEngine);
+             blitzem will manage the infrastructure for it to run on.</p>
+          <p>blitzem has currently been tested with Rackspace Cloud, and has support for Amazon EC2
+             and other providers coming soon. </p>
+          <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+      </div>
+        
+      <section id="about">
+          <div class="page-header">
+              <h1>About blitzem
+                <small>History and design philosophy</small>
+              </h1>
+          </div>
+          <div class="row">
+              <div class="span6">
+                  <h2>History</h2>
+                  <p>
+                      blitzem was created at the end of 2011 following a couple of years' experience with using
+                      various cloud providers for development and production infrastructure. We generally
+                      controlled our infrastructure via the cloud providers' web consoles or simple API scripting,
+                      but wanted a way to reduce the administrative overhead.
+                  </p>
+              </div>
+              <div class="span10">
+                  <h2>Design philosophy</h2>
+                  <ul>
+                      <li>To allow cloud servers to be managed in an <strong>automated, repeatable</strong> way,
+                          rather than being created ad-hoc via a web console.</li>
+                      <li>To allow environments to be defined in a simple, declarative configuration file,
+                          allowing <strong>version control, visibility</strong> and <strong>shared ownership</strong>
+                          across teams.</li>
+                      <li>To allow environments to be managed as a whole, allowing <strong>rapid setup/teardown</strong>
+                          of complete replicas of production for development, testing and experimentation.</li>
+
+                  </ul>
+              </div>
+          </div>
+      </section>
+
+        <section id="examples">
+            <div class="page-header">
+                <h1>Examples
+                    <small>What can I do with blitzem?</small>
+                </h1>
+            </div>
+            <div class="row">
+                <div class="span16">
+                    <h2>A load-balanced server environment</h2>
+                    <ol>
+                        <li>See <code>examples/load_balanced/environment.groovy</code>:
+<pre class="prettyprint">
+import com.github.rnorth.blitzemj.model.*
+import com.github.rnorth.blitzemj.model.thirdparty.*
+import static com.github.rnorth.blitzemj.model.Size.*
+
+
+Defaults.DEFAULTS["osVersion"] = "11.04"
+Defaults.DEFAULTS["provisioning"] = [new ScriptExecution("apt-get update; apt-get install dtach; mkdir web; cd web; hostname > index.html; dtach -n /tmp/simple_http.worker python -m SimpleHTTPServer 8080")]
+
+new RackspaceCloudLoadBalancer([
+	name:"web-lb1",
+	tags:["web"],
+	appliesToTag: "web",
+	protocol: "http",
+	port: 80,
+	nodePort: 8080
+	])
+
+new Node([
+	name:"web1",
+	tags:["web", "peak"],
+	size:ram(512)
+	])
+
+new Node([
+	name:"web2",
+	tags:["web", "peak"],
+	size:ram(256)
+	])
+</pre>
+                        </li>
+                        <li>In this environment, we have two server nodes and a single load balancer
+                        configured to share load between them. A simple script execution performed
+                        after node creation is used to create a basic web server on each node</li>
+                        <li>While in the <code>examples/load_balanced</code> folder, execute the command
+                            <code>blitzem up</code></li>
+                        <li>blitzem brings up both server nodes followed by the load balancer:</li>
+                        <li>Afterwards it displays a summary of the currently active devices:</li>
+                        <li>If you visit the load balancer's public IP address and refresh the page,
+                        you should see that the traffic has been spread across both server nodes.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <section id="usage">
+            <div class="page-header">
+                <h1>Usage
+                    <small>How do I use it?</small>
+                </h1>
+            </div>
+            <div class="row">
+                <div class="span16">
+                    <h2>Command line syntax</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Command</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>help</td>
+                                <td>Display a summary of blitzem commands.</td>
+                            </tr>
+                            <tr>
+                                <td>status</td>
+                                <td>For the current environment file, display the state of all
+                                defined nodes and load balancers.</td>
+                            </tr>
+                            <tr>
+                                <td>up <em>name/tag</em></td>
+                                <td>If it is not already up, create a new instance of the
+                                node(s) or load balancer(s) with the provided name or tag. If no name/tag
+                                is provided, this command will apply to all nodes and load balancers.</td>
+                            </tr>
+                            <tr>
+                                <td>down <em>name/tag</em></td>
+                                <td>If it is currently up, destroy the instance of the
+                                    node(s) or load balancer(s) with the provided name or tag.If no name/tag
+                                    is provided, this command will apply to all nodes and load balancers.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span16">
+                    <h2>Environment file syntax</h2>
+                </div>
+            </div>
+        </section>
+
+        <section id="download">
+            <div class="page-header">
+                <h1>Download
+                    <small>Get blitzem now!</small>
+                </h1>
+            </div>
+            <div class="row">
+                <div class="span16">
+                    <div class="alert-message warning">
+                        blitzem is currently in early beta release. This means that there may be bugs and missing
+                        features, and it may not be ready for use in all contexts. Users of blitzem are wholly responsible
+                        for any consequences of its use or misuse.
+                    </div>
+                    <div class="row">
+                        <div class="span3">
+                            <a class="btn success" href="#">Download v0.2 now</a>
+                            <p><small>For Linux, OS X, Windows, 1.3MB</small></p>
+                            <a class="btn info" href="#">Get the source on Github</a>
+                        </div>
+                        <div class="span10">
+                            <h3>Linux & OS X Installation</h3>
+                            <p>
+                                <ol>
+                                    <li>Unpack the archive to a convenient location (e.g. /usr/local/blitzem or ~/blitzem)</li>
+                                    <li>Add the following lines to your .bashrc file:
+<pre class="prettyprint">
+export BLITZEM_HOME=/usr/local/blitzem    # (or whereever you unpacked the archive to)
+export PATH=$BLITZEM_HOME/bin:$PATH
+</pre>
+                                    </li>
+                                    <li>Open a new terminal or type <code>. ~/.bashrc</code></li>
+                                    <li>Check that blitzem is installed by typing <code>blitzem help</code>. You should see a help message if it is correctly set up</li>
+                                </ol>
+                            </p>
+                            <h3>Windows Installation</h3>
+                            <p>Instructions coming soon</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <div class="page-header">
+                <h1>Contact
+                    <small>Get in touch</small>
+                </h1>
+            </div>
+            <div class="row">
+                <div class="span16">
+                    <h2>blitzem project</h2>
+                    <p>Visit the blitzem project on <a href="https://github.com/rnorth/blitzemj">Github</a> or email
+                    <a href="mailto:info@blitzem.org">info@blitzem.org</a> with any questions or comments.</p>
+                    <h3>About the author</h3>
+                    <p>
+                        The author, Richard North, is an IT Consultant based in London, UK.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+      <footer>
+        <p>&copy; Richard North 2012</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>
