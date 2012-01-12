@@ -106,6 +106,24 @@
 
         </div>
       </div>
+	<hr/>
+		<div class="row">
+			<div class="span16">
+				<div class="alert-message block-message success">
+					<h2>Getting started in four easy steps</h2>
+					<ol>
+						<li>Install <a href="#download">the latest blitzem release.</a></li>
+						<li>Put your cloud server API key settings into your 
+							<a href="#credentialsfile">blitzem configuration file</a>.</li>
+						<li>Describe your full cloud server and load balancer environment in a environment
+							file. (See <a href="#examples">examples</a>).</li>
+						<li>Bring your full environment up by typing <code>blitzem up</code> at the
+							terminal. (See other <a href="#commands">commands</a>).</li>
+					</ol>
+				</div>
+			</div>
+		</div>
+
         
       <section id="about">
           <div class="page-header">
@@ -202,7 +220,7 @@ new Node([
                 </h1>
             </div>
             <div class="row">
-                <div class="span16">
+                <div class="span16" id="commands">
                     <h2>Command line syntax</h2>
                     <table>
                         <thead>
@@ -238,7 +256,7 @@ new Node([
                 </div>
             </div>
             <div class="row">
-                <div class="span16">
+                <div class="span16" id="credentialsfile">
                     <h2>Credentials file syntax</h2>
                     <p>blitzem requires your cloud provider credentials to be stored separately from
                     your environment configuration file. This can be used to enable sensitive credentials
