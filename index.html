@@ -59,14 +59,14 @@
     <div class="topbar" data-scrollspy="scrollspy">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="#">blitzem <i>beta</i></a>
+          <a class="brand" href="#" onClick="javascript:_gaq.push(['_trackPageview', '/internal/home']);">blitzem <i>beta</i></a>
           <ul class="nav">
-            <li class="active"><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#examples">Examples</a></li>
-            <li><a href="#usage">Usage</a></li>
-            <li><a href="#download">Download</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li class="active"><a href="#home" onClick="javascript:_gaq.push(['_trackPageview', '/internal/home']);">Home</a></li>
+            <li><a href="#about" onClick="javascript:_gaq.push(['_trackPageview', '/internal/about']);">About</a></li>
+            <li><a href="#examples" onClick="javascript:_gaq.push(['_trackPageview', '/internal/examples']);">Examples</a></li>
+            <li><a href="#usage" onClick="javascript:_gaq.push(['_trackPageview', '/internal/usage']);">Usage</a></li>
+            <li><a href="#download" onClick="javascript:_gaq.push(['_trackPageview', '/internal/download']);">Download</a></li>
+            <li><a href="#contact" onClick="javascript:_gaq.push(['_trackPageview', '/internal/contact']);">Contact</a></li>
           </ul>
         </div>
       </div>
@@ -78,7 +78,7 @@
       <div class="hero-unit" id="home">
         <h1>blitzem</h1>
         <p>Simple cloud environment management</p>
-        <p><a class="btn success large" href="#download">Download the beta now! &raquo;</a></p>
+        <p><a class="btn success large" href="#download" onClick="javascript:_gaq.push(['_trackPageview', '/internal/download']);">Download the beta now! &raquo;</a></p>
       </div>
 
       <!-- Example row of columns -->
@@ -142,7 +142,7 @@
                   </p>
                   <p>
 	                  blitzem is open source, and released under a BSD Licence (see 
-					  <a href='https://raw.github.com/blitzem/blitzem/master/LICENCE.txt'>LICENCE.txt</a>)
+					  <a href='https://raw.github.com/blitzem/blitzem/master/LICENCE.txt'  onClick="javascript:_gaq.push(['_trackPageview', '/external/licence']);">LICENCE.txt</a>)
 				  </p>
               </div>
               <div class="span10">
@@ -300,9 +300,9 @@ loadbalancer-secretkey=************************ # as above
                     </div>
                     <div class="row">
                         <div class="span3">
-                            <a class="btn success" href="https://github.com/downloads/blitzem/blitzem/blitzemj-0.1-bin.zip">Download v0.1 now</a>
+                            <a class="btn success" href="https://github.com/downloads/blitzem/blitzem/blitzemj-0.1-bin.zip" onClick="javascript:_gaq.push(['_trackPageview', '/external/download']);">Download v0.1 now</a>
                             <p><small>For Linux, OS X; 13MB</small></p>
-                            <a class="btn info" href="http://github.com/blitzem/blitzem">Get the source on Github</a>
+                            <a class="btn info" href="http://github.com/blitzem/blitzem" onClick="javascript:_gaq.push(['_trackPageview', '/external/github']);">Get the source on Github</a>
                         </div>
                         <div class="span10">
                             <h3>Linux & OS X Installation</h3>
@@ -337,8 +337,8 @@ export PATH=$BLITZEM_HOME/bin:$PATH
             <div class="row">
                 <div class="span16">
                     <h2>blitzem project</h2>
-                    <p>Visit the blitzem project on <a href="https://github.com/blitzem/blitzem">Github</a> or email
-                    <a href="mailto:info@blitzem.org">info@blitzem.org</a> with any questions or comments.</p>
+                    <p>Visit the blitzem project on <a href="https://github.com/blitzem/blitzem" onClick="javascript:_gaq.push(['_trackPageview', '/external/github']);">Github</a> or email
+                    <a href="mailto:rich.north+blitzem@gmail.com" onClick="javascript:_gaq.push(['_trackPageview', '/mail']);">rich.north+blitzem@gmail.com</a> with any questions or comments.</p>
                     <h3>About the author</h3>
                     <p>
                         The author, Richard North, is an IT Consultant based in London, UK.
