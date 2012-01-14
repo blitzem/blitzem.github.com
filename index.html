@@ -38,20 +38,6 @@
     <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
 
-	<script type="text/javascript">
-
-	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-28035710-1']);
-	  _gaq.push(['_setDomainName', 'blitzem.org']);
-	  _gaq.push(['_trackPageview']);
-
-	  (function() {
-	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	  })();
-
-	</script>
   </head>
 
   <body>
@@ -305,7 +291,7 @@ loadbalancer-secretkey=************************ # as above
                             <a class="btn info" href="http://github.com/blitzem/blitzem" onClick="javascript:_gaq.push(['_trackPageview', '/external/github']);">Get the source on Github</a>
                         </div>
                         <div class="span10">
-                            <h3>Linux & OS X Installation</h3>
+                            <h3>Linux &amp; OS X Installation</h3>
                             <p>
                                 <ol>
                                     <li>Unpack the archive to a convenient location (e.g. /usr/local/blitzem or ~/blitzem)</li>
@@ -348,10 +334,38 @@ export PATH=$BLITZEM_HOME/bin:$PATH
         </section>
 
       <footer>
-        <p>&copy; Richard North 2012</p>
+		<div class="row">
+			<div span="span5">
+				<p>&copy; Richard North 2012</p>
+			</div>
+			<div class="span10">
+				<g:plusone size="small" annotation="inline"></g:plusone>
+			</div>
       </footer>
 
     </div> <!-- /container -->
+	<script type="text/javascript">
 
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-28035710-1']);
+	  _gaq.push(['_setDomainName', 'blitzem.org']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+	<script type="text/javascript">
+	  window.___gcfg = {lang: 'en-GB'};
+
+	  (function() {
+	    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+	    po.src = 'https://apis.google.com/js/plusone.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	  })();
+	</script>
   </body>
 </html>
