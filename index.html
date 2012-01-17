@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" itemscope itemtype="http://schema.org/Product">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>blitzem - Simple cloud environment management</title>
-    <meta name="author" content="Richard North">
-	<meta itemprop="name" content="blitzem - Simple cloud server management">
-	<meta itemprop="description" content="blitzem allows teams to manage cloud infrastructure as easily as code, enabling repeatability, version control, and sharing.">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
@@ -27,9 +26,16 @@
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="js/bootstrap-scrollspy.js"></script>
+    <script src="js/bootstrap-twipsy.js"></script>
+    <script src="js/bootstrap-popover.js"></script>
     <script type="text/javascript">
         $().ready( function() {
             $('#topbar').scrollSpy();
+            $("a[rel=popover]").popover({
+                                  offset: 10               
+                }).click(function(e) {
+                                  e.preventDefault()                
+                });       
         });
     </script>
 
@@ -46,14 +52,14 @@
     <div class="topbar" data-scrollspy="scrollspy">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="#" onClick="javascript:_gaq.push(['_trackPageview', '/internal/home']);">blitzem <i>beta</i></a>
+          <a class="brand" href="#">blitzem <i>beta</i></a>
           <ul class="nav">
-            <li class="active"><a href="#home" onClick="javascript:_gaq.push(['_trackPageview', '/internal/home']);">Home</a></li>
-            <li><a href="#about" onClick="javascript:_gaq.push(['_trackPageview', '/internal/about']);">About</a></li>
-            <li><a href="#examples" onClick="javascript:_gaq.push(['_trackPageview', '/internal/examples']);">Examples</a></li>
-            <li><a href="#usage" onClick="javascript:_gaq.push(['_trackPageview', '/internal/usage']);">Usage</a></li>
-            <li><a href="#download" onClick="javascript:_gaq.push(['_trackPageview', '/internal/download']);">Download</a></li>
-            <li><a href="#contact" onClick="javascript:_gaq.push(['_trackPageview', '/internal/contact']);">Contact</a></li>
+            <li class="active"><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#usage">Usage</a></li>
+            <li><a href="#download">Download</a></li>
+            <li><a href="#contact">Contact</a></li>
           </ul>
         </div>
       </div>
@@ -65,7 +71,7 @@
       <div class="hero-unit" id="home">
         <h1>blitzem</h1>
         <p>Simple cloud environment management</p>
-        <p><a class="btn success large" href="#download" onClick="javascript:_gaq.push(['_trackPageview', '/internal/download']);">Download the beta now! &raquo;</a></p>
+        <p><a class="btn success large" href="#download">Download the beta now! &raquo;</a></p>
       </div>
 
       <!-- Example row of columns -->
@@ -93,24 +99,6 @@
 
         </div>
       </div>
-	<hr/>
-		<div class="row">
-			<div class="span16">
-				<div class="alert-message block-message success">
-					<h2>Getting started in four easy steps</h2>
-					<ol>
-						<li>Install <a href="#download">the latest blitzem release.</a></li>
-						<li>Put your cloud server API key settings into your 
-							<a href="#credentialsfile">blitzem configuration file</a>.</li>
-						<li>Describe your full cloud server and load balancer environment in a environment
-							file. (See <a href="#examples">examples</a>).</li>
-						<li>Bring your full environment up by typing <code>blitzem up</code> at the
-							terminal. (See other <a href="#commands">commands</a>).</li>
-					</ol>
-				</div>
-			</div>
-		</div>
-
         
       <section id="about">
           <div class="page-header">
@@ -127,10 +115,6 @@
                       controlled our infrastructure via the cloud providers' web consoles or simple API scripting,
                       but wanted a way to reduce the administrative overhead.
                   </p>
-                  <p>
-	                  blitzem is open source, and released under a BSD Licence (see 
-					  <a href='https://raw.github.com/blitzem/blitzem/master/LICENCE.txt'  onClick="javascript:_gaq.push(['_trackPageview', '/external/licence']);">LICENCE.txt</a>)
-				  </p>
               </div>
               <div class="span10">
                   <h2>Design philosophy</h2>
@@ -158,36 +142,41 @@
                 <div class="span16">
                     <h2>A load-balanced server environment</h2>
                     <ol>
-                        <li>See <code>examples/load_balanced/environment.groovy</code>:
+                        <li>See <code>examples/load_balanced/environment.groovy</code>. Hover over the '?' symbols for an explanation of each element:
 <pre class="prettyprint">
 import com.github.rnorth.blitzemj.model.*
 import com.github.rnorth.blitzemj.model.thirdparty.*
 import static com.github.rnorth.blitzemj.model.Size.*
 
+/* After raising the load balancer and nodes, requests to the load 
+ * balancer on port 80 should be randomly distributed across web1 
+ * and web2, and the returned index.html page should be the node hostname.
+ */
 
 Defaults.DEFAULTS["osVersion"] = "11.04"
-Defaults.DEFAULTS["provisioning"] = [new ScriptExecution("apt-get update; apt-get install dtach; mkdir web; cd web; hostname > index.html; dtach -n /tmp/simple_http.worker python -m SimpleHTTPServer 8080")]
+Defaults.DEFAULTS["provisioning"] = [new ScriptExecution("apt-get update; apt-get install dtach; mkdir web; cd web; hostname > index.html; dtach -n /tmp/simple_http.worker python -m SimpleHTTPServer 8080")]      // <a href="#" data-content="Override global defaults. In this case, we override the default operating system version (default OS type is Ubuntu, so this will select Ubuntu 11.04). We also override the post-build provisioning to execute a quick-and-dirty embedded web server to demonstrate the load balancing capability." data-original-title="Default overrides" rel="popover">?</a>
 
-new RackspaceCloudLoadBalancer([
-	name:"web-lb1",
-	tags:["web"],
-	appliesToTag: "web",
-	protocol: "http",
-	port: 80,
-	nodePort: 8080
-	])
+
+new RackspaceCloudLoadBalancer([        // <a href="#" data-content="Declare a load-balancer, using a provider specific version to take advantage of specific features" data-original-title="Load balancer" rel="popover">?</a>
+    name:"web-lb1",
+    tags:["web"],                       // <a href="#" data-content="Specify tag groups that this node/load balancer should respond to, for example when executing commands such as 'blitzem up web'" data-original-title="Tags" rel="popover">?</a>
+    appliesToTag: "web",                // <a href="#" data-content="Specify which tag this load balancer should apply to - all nodes with this tag will be load-balanced" data-original-title="Load Balancer node mapping" rel="popover">?</a>
+    protocol: "http",
+    port: 80,
+    nodePort: 8080
+    ])
+
+new Node([                              // <a href="#" data-content="Declare a general purpose cloud server node" data-original-title="Cloud server node" rel="popover">?</a>
+    name:"web1",
+    tags:["web", "peak"],               // <a href="#" data-content="Specify tag groups that this node/load balancer should respond to, for example when executing commands such as 'blitzem up web'" data-original-title="Tags" rel="popover">?</a>
+    size:ram(512)                       // <a href="#" data-content="Specify the size of the server (by RAM, CPU cores, or disk). Operating system and post-build provisioning options are also supported." data-original-title="Sizing, OS and provisioning" rel="popover">?</a>
+    ])
 
 new Node([
-	name:"web1",
-	tags:["web", "peak"],
-	size:ram(512)
-	])
-
-new Node([
-	name:"web2",
-	tags:["web", "peak"],
-	size:ram(256)
-	])
+    name:"web2",
+    tags:["web", "peak"],
+    size:ram(256)
+    ])
 </pre>
                         </li>
                         <li>In this environment, we have two server nodes and a single load balancer
@@ -211,7 +200,7 @@ new Node([
                 </h1>
             </div>
             <div class="row">
-                <div class="span16" id="commands">
+                <div class="span16">
                     <h2>Command line syntax</h2>
                     <table>
                         <thead>
@@ -247,7 +236,7 @@ new Node([
                 </div>
             </div>
             <div class="row">
-                <div class="span16" id="credentialsfile">
+                <div class="span16">
                     <h2>Credentials file syntax</h2>
                     <p>blitzem requires your cloud provider credentials to be stored separately from
                     your environment configuration file. This can be used to enable sensitive credentials
@@ -287,12 +276,12 @@ loadbalancer-secretkey=************************ # as above
                     </div>
                     <div class="row">
                         <div class="span3">
-                            <a class="btn success" href="https://github.com/downloads/blitzem/blitzem/blitzemj-0.1-bin.zip" onClick="javascript:_gaq.push(['_trackPageview', '/external/download']);">Download v0.1 now</a>
+                            <a class="btn success" href="https://github.com/downloads/blitzem/blitzem/blitzemj-0.1-bin.zip">Download v0.1 now</a>
                             <p><small>For Linux, OS X; 13MB</small></p>
-                            <a class="btn info" href="http://github.com/blitzem/blitzem" onClick="javascript:_gaq.push(['_trackPageview', '/external/github']);">Get the source on Github</a>
+                            <a class="btn info" href="http://github.com/blitzem/blitzem">Get the source on Github</a>
                         </div>
                         <div class="span10">
-                            <h3>Linux &amp; OS X Installation</h3>
+                            <h3>Linux & OS X Installation</h3>
                             <p>
                                 <ol>
                                     <li>Unpack the archive to a convenient location (e.g. /usr/local/blitzem or ~/blitzem)</li>
@@ -324,8 +313,8 @@ export PATH=$BLITZEM_HOME/bin:$PATH
             <div class="row">
                 <div class="span16">
                     <h2>blitzem project</h2>
-                    <p>Visit the blitzem project on <a href="https://github.com/blitzem/blitzem" onClick="javascript:_gaq.push(['_trackPageview', '/external/github']);">Github</a> or email
-                    <a href="mailto:rich.north+blitzem@gmail.com" onClick="javascript:_gaq.push(['_trackPageview', '/mail']);">rich.north+blitzem@gmail.com</a> with any questions or comments.</p>
+                    <p>Visit the blitzem project on <a href="https://github.com/rnorth/blitzemj">Github</a> or email
+                    <a href="mailto:info@blitzem.org">info@blitzem.org</a> with any questions or comments.</p>
                     <h3>About the author</h3>
                     <p>
                         The author, Richard North, is an IT Consultant based in London, UK.
@@ -335,38 +324,10 @@ export PATH=$BLITZEM_HOME/bin:$PATH
         </section>
 
       <footer>
-		<div class="row">
-			<div class="span10">
-				<p>&copy; Richard North 2012</p>
-			</div>
-			<div class="span5">
-				<g:plusone size="small" annotation="inline"></g:plusone>
-			</div>
+        <p>&copy; Richard North 2012</p>
       </footer>
 
     </div> <!-- /container -->
-	<script type="text/javascript">
 
-	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-28035710-1']);
-	  _gaq.push(['_setDomainName', 'blitzem.org']);
-	  _gaq.push(['_trackPageview']);
-
-	  (function() {
-	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	  })();
-
-	</script>
-	<script type="text/javascript">
-	  window.___gcfg = {lang: 'en-GB'};
-
-	  (function() {
-	    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-	    po.src = 'https://apis.google.com/js/plusone.js';
-	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-	  })();
-	</script>
   </body>
 </html>
