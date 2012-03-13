@@ -5,7 +5,7 @@
     <title>blitzem - Simple cloud environment management</title>
     <meta name="author" content="Richard North">
 	<meta itemprop="name" content="blitzem - Simple cloud server management">
-	<meta itemprop="description" content="blitzem allows teams to manage cloud infrastructure as easily as code, enabling
+	<meta itemprop="description" content="blitzem allows teams to manage cloud infrastructure as easily as code"
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
@@ -95,8 +95,8 @@
           <h2>Fits with existing tools</h2>
           <p>You bring your provisioning tool of choice (e.g. Puppet, Chef, CFEngine);
              blitzem will manage the infrastructure for it to run on.</p>
-          <p>blitzem has currently been tested with Rackspace Cloud, and has support for Amazon EC2
-             and other providers coming soon. </p>
+          <p>blitzem has currently been tested with Rackspace Cloud and Amazon EC2, and could support
+              other Infrastructure-as-a-Service providers in the future.</p>
 
         </div>
       </div>
@@ -116,6 +116,8 @@
            <li>Bring your full environment up by typing <code>blitzem up</code> at the
              terminal. (See other <a href="#commands">commands</a>).</li>
          </ol>
+         <p class="small">See <a href="#download">the download and setup instructions</a> for more
+          detail.</p>
        </div>
      </div>
    </div>
@@ -162,24 +164,51 @@
             </div>
             <div class="row">
                 <div class="span16">
+                    <h2>Suggested use cases</h2>
+                    <ul>
+                        <li>If production infrastructure is cloud-based, refer to or copy the same blitzem
+                            configuration file for each different environment (prod, pre-prod, test, etc).
+                            This allows confidence that the pre-production environments match production.
+                            A different cloud account would be used for each tier to provide isolation
+                            and avoid naming conflicts.</li>
+                        <li>When diagnosing a production fault, use blitzem to quickly spin up a replica
+                            of production infrastructure.</li>
+                        <li>Use blitzem to manage continuous integration servers, allowing tear down at the end of
+                            each working day, and clean recreation the next morning.</li>
+                        <li>Tag certain nodes as 'peak' or 'offpeak', and use blitzem on a scheduled job to spin
+                            them up/down around busy periods.</li>
+                        <li>Use dynamic scripting within the blitzem environment file to provide fine-tuning
+                            over scaling; e.g. detect load average across a tier and instantiate enough servers
+                            to handle the load.</li>
+                        <li>Keep the blitzem environment file in source control and allow each developer to have
+                            their own mini-replica of production. Use dynamic scripting within the environment file
+                            to add the developer's username as a prefix to each node/load balancer's name, and
+                            to select smaller/fewer nodes.</li>
+                    </ul>
+                    <p>
+                      It is suggested that blitzem <em>always</em> be used in conjunction with a package configuration management tool (e.g. Puppet, Chef, CFEngine) to install packages and detailed configuration files on provisioned nodes.
+                    </p>
                     <h2>A load-balanced server environment</h2>
                     <ol>
                         <li>See <code>examples/load_balanced/environment.groovy</code>. Hover over the '?' symbols for an explanation of each element:
 <pre class="prettyprint">
-import com.github.rnorth.blitzemj.model.*
-import com.github.rnorth.blitzemj.model.thirdparty.*
-import static com.github.rnorth.blitzemj.model.Size.*
+import org.blitzem.model.*
+import org.blitzem.model.thirdparty.*
+import static org.blitzem.model.Size.*
 
 /* After raising the load balancer and nodes, requests to the load 
  * balancer on port 80 should be randomly distributed across web1 
  * and web2, and the returned index.html page should be the node hostname.
+ *
+ * To verify, run `blitzem up` and put the public IP address of the
+ * load balancer into a web browser.
  */
 
 Defaults.DEFAULTS["osVersion"] = "11.04"
 Defaults.DEFAULTS["provisioning"] = [new ScriptExecution("apt-get update; apt-get install dtach; mkdir web; cd web; hostname > index.html; dtach -n /tmp/simple_http.worker python -m SimpleHTTPServer 8080")]      // <a href="#" data-content="Override global defaults. In this case, we override the default operating system version (default OS type is Ubuntu, so this will select Ubuntu 11.04). We also override the post-build provisioning to execute a quick-and-dirty embedded web server to demonstrate the load balancing capability." data-original-title="Default overrides" rel="popover">?</a>
 
 
-new RackspaceCloudLoadBalancer([        // <a href="#" data-content="Declare a load-balancer, using a provider specific version to take advantage of specific features" data-original-title="Load balancer" rel="popover">?</a>
+new LoadBalancer([                      // <a href="#" data-content="Declare a load-balancer" data-original-title="Load balancer" rel="popover">?</a>
     name:"web-lb1",
     tags:["web"],                       // <a href="#" data-content="Specify tag groups that this node/load balancer should respond to, for example when executing commands such as 'blitzem up web'" data-original-title="Tags" rel="popover">?</a>
     appliesToTag: "web",                // <a href="#" data-content="Specify which tag this load balancer should apply to - all nodes with this tag will be load-balanced" data-original-title="Load Balancer node mapping" rel="popover">?</a>
@@ -233,22 +262,22 @@ new Node([
                         </thead>
                         <tbody>
                             <tr>
-                                <td>help</td>
+                                <td><code>help</code></td>
                                 <td>Display a summary of blitzem commands.</td>
                             </tr>
                             <tr>
-                                <td>status</td>
+                                <td><code>status</code></td>
                                 <td>For the current environment file, display the state of all
                                 defined nodes and load balancers.</td>
                             </tr>
                             <tr>
-                                <td>up <em>name/tag</em></td>
+                                <td><code>up <em>name/tag</em></code></td>
                                 <td>If it is not already up, create a new instance of the
                                 node(s) or load balancer(s) with the provided name or tag. If no name/tag
                                 is provided, this command will apply to all nodes and load balancers.</td>
                             </tr>
                             <tr>
-                                <td>down <em>name/tag</em></td>
+                                <td><code>down <em>name/tag</em></code></td>
                                 <td>If it is currently up, destroy the instance of the
                                     node(s) or load balancer(s) with the provided name or tag.If no name/tag
                                     is provided, this command will apply to all nodes and load balancers.</td>
@@ -266,19 +295,107 @@ new Node([
                     environment configuration across teams. For blitzem to operate, you need to ensure
                     that a file similar to the following is placed at <code>~/.blitzem/config.properties</code>:</p>
 <pre class="prettyprint">
-compute-provider=cloudservers-uk                # for Rackspace Cloud UK
-compute-accesskeyid=********                    # cloud API username
-compute-secretkey=************************      # cloud API key
-loadbalancer-provider=cloudloadbalancers-uk
-loadbalancer-accesskeyid=********               # as above
-loadbalancer-secretkey=************************ # as above
+# config.properties template (created for blitzem version 0.3)
+
+# Valid values: cloudservers-uk, aws-ec2
+compute-provider=
+compute-accesskeyid=
+compute-secretkey=
+
+# Valid values: cloudloadbalancers-uk, aws-ec2
+loadbalancer-provider=
+loadbalancer-accesskeyid=
+loadbalancer-secretkey=
+
+# Valid values: rackspace-uk, aws
+provider=rackspace-uk
 </pre>
                 </div>
             </div>
             <div class="row">
                 <div class="span16">
                     <h2>Environment file syntax</h2>
-                    <p>Coming soon</p>
+                    <p>
+                        The blitzem environment file should be named <code>environment.groovy</code>. It should either be present in the working directory where blitzem is run from, or should be referred to using a command line option: 
+                        <code>blitzem --source=/some/other/dir/environment.groovy up</code>.
+                    </p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Parameters</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="5">Node</td>
+                                <td></td>
+                                <td>A compute node / virtual server</td>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>The name that blitzem should use (may or may not map
+                                    directly to the name of the compute node in the
+                                    cloud)</td>
+                            </tr>
+                            <tr>
+                                <td>tags</td>
+                                <td>Specifies tag groups that this node should respond to, for 
+                                    example when executing commands such as 'blitzem up web'</td>
+                            </tr>
+                            <tr>
+                                <td>size</td>
+                                <td>A minimum size for this node; e.g.: <code>ram(1024)</code> or 
+                                    <code>ramAndCores(1024,2)</code></td>
+                            </tr>
+                            <tr>
+                                <td>os</td>
+                                <td>OS criteria that should be used when selecting a base image, e.g.:
+                                    <pre>
+new Os([
+  family:  'UBUNTU',
+  version: '11.04',
+  os64Bit: true
+])</pre></td>
+                            </tr>
+                            <tr>
+                                <td rowspan="7">LoadBalancer</td>
+                                <td></td>
+                                <td>A load balancer distributes incoming requests across
+                                    compute nodes</td>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>The name that blitzem should use (may or may not map
+                                    directly to the name of the load balancer in the
+                                    cloud)</td>
+                            </tr>
+                            <tr>
+                                <td>tags</td>
+                                <td>Specifies tag groups that this load balancer should respond to, for 
+                                    example when executing commands such as 'blitzem up web'</td>
+                            </tr>
+                            <tr>
+                                <td>appliesToTag</td>
+                                <td>Specify which tag this load balancer should apply to - all nodes with this 
+                                    tag will be load-balanced</td>
+                            </tr>
+                            <tr>
+                                <td>protocol</td>
+                                <td>What protocol is being load balanced; either <em>http</em> or 
+                                    <em>tcp</em></td>
+                            </tr>
+                            <tr>
+                                <td>port</td>
+                                <td>The externally accessible port the load balancer will listen on</td>
+                            </tr>
+                            <tr>
+                                <td>nodePort</td>
+                                <td>The port on compute nodes which incoming requests should be routed to</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
@@ -298,23 +415,56 @@ loadbalancer-secretkey=************************ # as above
                     </div>
                     <div class="row">
                         <div class="span3">
-                            <a class="btn success" href="https://github.com/downloads/blitzem/blitzem/blitzemj-0.2-bin.zip" onClick="javascript:_gaq.push(['_trackPageview', '/external/download']);">Download v0.2 now</a>
-							<p><small>For Linux, OS X; 13MB</small></p>
-                            <a class="btn info" href="http://github.com/blitzem/blitzem" onClick="javascript:_gaq.push(['_trackPageview', '/external/github']);">Get the source on Github</a>
+                            <a class="btn success" href="https://github.com/downloads/blitzem/blitzem/blitzem-0.3-bin.zip" onClick="javascript:_gaq.push(['_trackPageview', '/external/download']);">Download v0.3 now</a>
+							<p><small>For Linux, OS X; 19MB</small></p>
+                            <a class="btn info" href="https://github.com/blitzem/blitzem" onClick="javascript:_gaq.push(['_trackPageview', '/external/github']);">Get the source on Github</a>
 						</div>
                         <div class="span10">
-                            <h3>Linux &amp; OS X Installation</h3>
+                            <h3>Linux &amp; OS X Installation and first use</h3>
                             <p>
                                 <ol>
-                                    <li>Unpack the archive to a convenient location (e.g. /usr/local/blitzem or ~/blitzem)</li>
+                                    <li>Please ensure that a recent version of Java is installed on your system
+                                        (e.g. Sun JDK 1.6+)</li>
+                                    <li>Unpack the archive to a convenient location (e.g. 
+                                    <code>/usr/local/blitzem</code> or <code>~/blitzem</code>)</li>
                                     <li>Add the following lines to your .bashrc file:
 <pre class="prettyprint">
 export BLITZEM_HOME=/usr/local/blitzem    # (or whereever you unpacked the archive to)
-export PATH=$BLITZEM_HOME/bin:$PATH
-</pre>
+export PATH=$BLITZEM_HOME/bin:$PATH</pre>
                                     </li>
                                     <li>Open a new terminal or type <code>. ~/.bashrc</code></li>
                                     <li>Check that blitzem is installed by typing <code>blitzem help</code>. You should see a help message if it is correctly set up</li>
+                                    <h5>Try it out</h5>
+                                    <li>Ensure you have API access to one of the supported cloud providers, and
+                                        have credentials entered into the <code>~/.blitzem/config.properties</code>
+                                        file.
+                                    <li>Navigate to one of the provided examples:
+<pre>
+cd $BLITZEM_HOME/examples/load_balanced</pre>
+                                    </li>
+                                    <li>Launch blitzem to create the servers and load balancer:
+<pre>
+blitzem up</pre>
+                                    </li>
+                                    <li>After a while, you should see success messages followed by a status
+                                        summary resembling the following:
+<pre>
+Node status
+Node name Status Public IP Address(es) Private IP Address(es)        Tags
+========= ====== ===================== ====================== ===========
+     web1     UP     [164.177.147.234]        [10.177.141.44] [web, peak]
+     web2     UP     [164.177.147.237]        [10.177.141.54] [web, peak]
+     web3     UP     [164.177.147.239]        [10.177.141.56] [web, peak]
+     web4     UP     [164.177.147.241]        [10.177.141.58] [web, peak]
+
+
+Load Balancer status
+LB name Status       IP Address  Tags  Applies to nodes tagged Type Location
+======= ====== ================ ===== ======================== ==== ========
+web-lb1     UP [31.222.175.127] [web]                      web   LB [GB-SLG]</pre></li>
+                                    <li>Take the load balancer IP address and enter it into your web browser (e.g. http://31.222.175.127). You should see the hostname of one of the nodes returned.
+                                    Refreshing the page should return a different host name on each request,
+                                    corresponding to each of the four load-balanced nodes.</li>
                                 </ol>
                             </p>
                             <h3>Windows Installation</h3>
